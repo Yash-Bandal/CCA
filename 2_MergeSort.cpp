@@ -39,8 +39,14 @@ void printArray(const vector<int> &arr, int n) {
 int main() {
     vector<int> arr = {7, 9, 0, 5, 3, 4, 2, 1, 6};
     int n = arr.size();
+    
+    cout << "Before Sort :" << endl;
+    printArray(arr,n);
+    
     getFunc(arr, n);
+    
     cout << "After Sorting :" << endl;
     printArray(arr, n);
+    
     return 0;
 }
