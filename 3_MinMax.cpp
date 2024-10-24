@@ -19,7 +19,7 @@ pair<int, int> findMinMax(const vector<int>& arr, int low, int high) {
     int mid = (low + high) / 2;
 
     // Recursively find min and max in both halves
-    auto leftMinMax = findMinMax(arr, low, mid);
+    auto leftMinMax = findMinMax(arr, low, mid);  //auto..stores a pair{p1 , p2}
     auto rightMinMax = findMinMax(arr, mid + 1, high);
 
     // Combine results
