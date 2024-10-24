@@ -27,12 +27,12 @@ void mergeSort(vector<int> &arr, int low, int high) {
     }
 }
 
-void getFunc(vector<int> &arr, int n) {
-    mergeSort(arr, 0, n - 1);
-}
 
 void printArray(const vector<int> &arr, int n) {
-    for (int i = 0; i < n; i++) cout << arr[i] << " ";
+    for (int i = 0; i < n; i++)
+    {
+        cout << arr[i] << " ";
+    }
     cout << endl;
 }
 
@@ -43,7 +43,7 @@ int main() {
     cout << "Before Sort :" << endl;
     printArray(arr,n);
     
-    getFunc(arr, n);
+    mergeSort(arr, 0, n - 1);
     
     cout << "After Sorting :" << endl;
     printArray(arr, n);
