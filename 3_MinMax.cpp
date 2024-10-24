@@ -69,33 +69,7 @@ int main()
     cout << "Maximum: " << minmax.second << endl;
     return 0;
 }
-#include <iostream>
-using namespace std;
-pair<int, int> findMinMax(int arr[], int low, int high)
-{
-    if (low == high)
-        return {arr[low], arr[low]};
-    if (high == low + 1)
-    {
-        if (arr[low] > arr[high])
-            return {arr[high], arr[low]};
-        else
-            return {arr[low], arr[high]};
-    }
-    int mid = (low + high) / 2;
-    pair<int, int> left = findMinMax(arr, low, mid);
-    pair<int, int> right = findMinMax(arr, mid + 1, high);
-    return {min(left.first, right.first), max(left.second, right.second)};
-}
-int main()
-{
-    int arr[] = {1000, 11, 445, 1, 330, 3000};
-    int n = sizeof(arr) / sizeof(arr[0]);
-    pair<int, int> minmax = findMinMax(arr, 0, n - 1);
-    cout << "Minimum: " << minmax.first << endl;
-    cout << "Maximum: " << minmax.second << endl;
-    return 0;
-}
+
 
 //---------------------------------------------
 
