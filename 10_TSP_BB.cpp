@@ -1,64 +1,85 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-class TSP {
-    int n;
-    vector<vector<int>> graph;
-    vector<bool> visited;
-    int minCost = INT_MAX;
-    vector<int> bestPath;
+int n;
+vector<vector<int>> graph;
+int minCost = INT_MAX;
 
-public:
-    TSP(int n, const vector<vector<int>>& graph) : n(n), graph(graph), visited(n, false) {}
+// Function to calculate the lower bound (cost estimate) for a partial tour
+int calculateBound(const vector<int>& currPath, vector<bool>& visited) {
+    int bound = 0;
 
-    void tsp(int currPos, int count, int cost, vector<int>& path) {
-        if (count == n && graph[currPos][0]) { // All cities visited
-            cost += graph[currPos][0]; // Return to starting city
+    // Adding cost of edges from each visited city
+    for (int i = 0; i < n; i++) {
+        if (visited[i]) {
+            int minEdge = INT_MAX;
+            for (int j = 0; j < n; j++) {
+                if (!visited[j] && graph[i][j]) {
+                    minEdge = min(minEdge, graph[i][j]);
+                }
+            }
+            if (minEdge != INT_MAX) {
+                bound += minEdge;
+            }
+        }
+    }
+    return bound;
+}
+
+// Recursive Branch and Bound function
+void branchAndBound(int currPos, int count, int cost, vector<int>& currPath, vector<bool>& visited) {
+    // Prune paths with cost exceeding the minimum known cost
+    if (cost >= minCost) return;
+
+    // Check if all cities are visited
+    if (count == n) {
+        if (graph[currPos][0]) {  // There is a return path to the starting city
+            cost += graph[currPos][0];
             if (cost < minCost) {
                 minCost = cost;
-                bestPath = path;
-                bestPath.push_back(0); // Adding the starting city to complete the tour
-            }
-            return;
-        }
-
-        for (int i = 0; i < n; i++) {
-            if (!visited[i] && graph[currPos][i]) {
-                visited[i] = true; // Mark city as visited
-                path.push_back(i); // Add city to current path
-                tsp(i, count + 1, cost + graph[currPos][i], path);
-                visited[i] = false; // Backtrack
-                path.pop_back(); // Remove city from current path
             }
         }
+        return;
     }
 
-    void solve() {
-        visited[0] = true; // Start from the first city
-        vector<int> path;
-        path.push_back(0); // Starting city
-        tsp(0, 1, 0, path);
+    // Calculate a lower bound (cost estimate) for pruning unpromising paths
+    int bound = calculateBound(currPath, visited);
+    if (cost + bound >= minCost) return;
 
-        cout << "Minimum Cost: " << minCost << endl;
-        cout << "Path: ";
-        for (int city : bestPath) {
-            cout << city << " ";
+    // Recur to explore further cities
+    for (int i = 0; i < n; i++) {
+        if (!visited[i] && graph[currPos][i]) {
+            visited[i] = true;
+            currPath.push_back(i);
+            branchAndBound(i, count + 1, cost + graph[currPos][i], currPath, visited);
+            visited[i] = false;
+            currPath.pop_back();
         }
-        cout << endl;
     }
-};
+}
+
+// Function to solve TSP using Branch and Bound
+void solveTSP() {
+    vector<int> currPath;
+    vector<bool> visited(n, false);
+
+    visited[0] = true;  // Start from the first city
+    currPath.push_back(0);  // Starting city
+    branchAndBound(0, 1, 0, currPath, visited);
+
+    cout << "Minimum Cost: " << minCost << endl;
+}
 
 int main() {
-    int n = 4;
-    vector<vector<int>> graph = {
+    n = 4;
+    graph = {
         {0, 10, 15, 20},
         {10, 0, 35, 25},
         {15, 35, 0, 30},
         {20, 25, 30, 0}
     };
 
-    TSP tsp(n, graph);
-    tsp.solve();
+    solveTSP();
 
     return 0;
 }
