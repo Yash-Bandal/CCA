@@ -67,63 +67,68 @@ tsp(1, 0): Start the TSP algorithm from city 0, with only city 0 visited.
 
 
 
-
-
 #include <bits/stdc++.h>
 using namespace std;
 
-int tsp(int pos, int visited, const vector<vector<int>>& graph, int n,
-vector<vector<int>>& dp, vector<vector<int>>& parent) {
-    if (visited == (1 << n) - 1) {
-        return graph[pos][0];
+int n = 4;
+int dp[16][4];
+int parent[16][4];  // To track the next city in the path
+int dist[10][10] = {
+    {0, 20, 42, 25},
+    {20, 0, 30, 34},
+    {42, 30, 0, 10},
+    {25, 34, 10, 0}
+};
+int VisitedAll = (1 << n) - 1; 
+
+int tsp(int mask, int pos) {
+    if (mask == VisitedAll) { 
+        return dist[pos][0];  // Distance back to the start city
     }
-    if (dp[pos][visited] != -1) {
-        return dp[pos][visited];
+    if (dp[mask][pos] != -1) {
+        return dp[mask][pos];  // Return the stored result if already computed
     }
-    int minCost = INT_MAX;
+    
+    int ans = INT_MAX;
+    int nextCity = -1;  // To store the city that gives the minimum cost
+    
     for (int city = 0; city < n; city++) {
-        if ((visited & (1 << city)) == 0) {
- int newCost = graph[pos][city] + tsp(city, visited | (1 << city), graph, n, dp, parent);
-            if (newCost < minCost) {
-                minCost = newCost;
-                parent[pos][visited] = city;
+        int cityBit = (1 << city);
+        if ((mask & cityBit) == 0) {  // If city is unvisited
+            int newAns = dist[pos][city] + tsp(mask | cityBit, city);
+            if (newAns < ans) {
+                ans = newAns;
+                nextCity = city;  // Update the next city in the path
             }
         }
     }
-    return dp[pos][visited] = minCost;
+    
+    parent[mask][pos] = nextCity;  // Store the next city in the parent array
+    return dp[mask][pos] = ans;
 }
 
-void printPath(int n, vector<vector<int>>& parent) {
-    int visited = 1;
-    int pos = 0;
-    cout << "Path: 0 ";
-    while (true) {
-        int nextCity = parent[pos][visited];
-        if (nextCity == -1) break;
-        cout << "-> " << nextCity;
-        visited |= (1 << nextCity);
-        pos = nextCity;
+void printPath() {
+    int mask = 1, pos = 0;
+    cout << "Path: " << pos;  // Starting from city 0
+    
+    while (mask != VisitedAll) {
+        pos = parent[mask][pos];  // Get the next city in the path
+        cout << " -> " << pos;
+        mask |= (1 << pos);  // Mark this city as visited in the mask
     }
-    cout << "-> 0" << endl;
+    cout << " -> 0" << endl;  // Return to the starting city
 }
 
 int main() {
-    vector<vector<int>> graph = {
-        {0, 29, 20, 21},
-        {29, 0, 15, 17},
-        {20, 15, 0, 28},
-        {21, 17, 28, 0}
-    };
-    int n = graph.size();
-    vector<vector<int>> dp(n, vector<int>(1 << n, -1));
-    vector<vector<int>> parent(n, vector<int>(1 << n, -1));
-    int minCost = tsp(0, 1, graph, n, dp, parent);
-    cout << "Minimum Cost: " << minCost << endl;
-    printPath(n, parent);
+    for (int i = 0; i < (1 << n); i++) {
+        for (int j = 0; j < n; j++) {
+            dp[i][j] = -1;
+            parent[i][j] = -1;  // Initialize the parent array
+        }
+    }
+    
+    cout << "Minimum weight is: " << tsp(1, 0) << endl;
+    printPath();  // Print the path
+    
     return 0;
 }
--------------------------
-Output:
--Minimum Cost: 73
-Path: 0 -> 2-> 1-> 3-> 0
-
