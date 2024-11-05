@@ -41,6 +41,11 @@ int main() {
 }
 //or
 
+
+
+
+
+
 //O
 #include <iostream>
 using namespace std;
