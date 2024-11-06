@@ -1,3 +1,5 @@
+Time Complexity: 𝑂 ( 𝑛^2 ⋅ 2 𝑛 )
+    Space Complexity: 𝑂 ( 𝑛 ⋅ 2 𝑛 )
 
 #include <bits/stdc++.h>
 using namespace std;
